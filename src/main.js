@@ -98,10 +98,12 @@ export default class StepZilla extends Component {
     this.setState({navState: this.getNavStates(next, this.props.steps.length)});
 
     if (next < this.props.steps.length) {
+      this.props.onStepChange(this.props.steps[next]);
       this.setState({compState: next});
     }
 
     this.checkNavState(next);
+
   }
 
   // handles keydown on enter being pressed in any Child component input area. in this case it goes to the next (ignore textareas as they should allow line breaks)
@@ -220,7 +222,7 @@ export default class StepZilla extends Component {
     }
   }
 
-  // update step's validation flag
+  // update steps validation flag
   updateStepValidationFlag(val = true) {
     this.props.steps[this.state.compState].validated = val; // note: if a step component returns 'underfined' then treat as "true".
   }
@@ -309,13 +311,6 @@ export default class StepZilla extends Component {
 
     return (
       <div className="multi-step" onKeyDown={(evt) => {this.handleKeyDown(evt)}}>
-          {
-              this.props.showSteps
-                  ? <ol className="progtrckr">
-                      {this.renderSteps()}
-                  </ol>
-              : <span></span>
-          }
 
           {compToRender}
         <div style={this.props.showNavigation ? {} : this.hidden} className="footer-buttons">
@@ -335,6 +330,13 @@ export default class StepZilla extends Component {
           >
             {this.state.nextStepText}
           </button>
+          {
+              this.props.showSteps ?
+                <ol className="progtrckr">
+                  {this.renderSteps()}
+                </ol>
+              : <span></span>
+          }
         </div>
       </div>
     );
@@ -353,7 +355,8 @@ StepZilla.defaultProps = {
   nextButtonCls: "btn btn-prev btn-primary btn-lg pull-right",
   backButtonText: "Previous",
   backButtonCls: "btn btn-next btn-primary btn-lg pull-left",
-  hocValidationAppliedTo: []
+  hocValidationAppliedTo: [],
+  onStepChange: function() {}
 };
 
 StepZilla.propTypes = {
@@ -372,5 +375,6 @@ StepZilla.propTypes = {
   nextButtonCls: PropTypes.string,
   backButtonCls: PropTypes.string,
   backButtonText: PropTypes.string,
-  hocValidationAppliedTo: PropTypes.array
+  hocValidationAppliedTo: PropTypes.array,
+  onStepChange: PropTypes.func
 }
