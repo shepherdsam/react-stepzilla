@@ -112,7 +112,8 @@ var StepZilla = function (_Component) {
 
       // last step hide next btn, hide previous btn if supplied as props
       if (currentStep >= this.props.steps.length - 1) {
-        showNextBtn = false;
+        nextStepText = this.props.nextBtnOnLastStepText;
+        showNextBtn = this.props.nextBtnOnLastStep === false ? false : true;
         showPreviousBtn = this.props.prevBtnOnLastStep === false ? false : true;
       }
 
@@ -248,7 +249,11 @@ var StepZilla = function (_Component) {
         _this4.updateStepValidationFlag(proceed);
 
         if (proceed) {
-          _this4.setNavState(_this4.state.compState + 1);
+          if (_this4.state.compState + 1 === _this4.props.steps.length) {
+            _this4.props.nextBtnOnLastStepAction();
+          } else {
+            _this4.setNavState(_this4.state.compState + 1);
+          }
         }
       }).catch(function (e) {
         if (e) {
@@ -447,6 +452,8 @@ var StepZilla = function (_Component) {
 exports.default = StepZilla;
 
 
+var noop = function noop() {};
+
 StepZilla.defaultProps = {
   showSteps: true,
   showNavigation: true,
@@ -460,7 +467,10 @@ StepZilla.defaultProps = {
   backButtonText: "Previous",
   backButtonCls: "btn btn-next btn-primary btn-lg pull-left",
   hocValidationAppliedTo: [],
-  onStepChange: function onStepChange() {}
+  onStepChange: noop,
+  nextBtnOnLastStep: false,
+  nextBtnOnLastStepText: 'Save',
+  nextBtnOnLastStepAction: noop
 };
 
 StepZilla.propTypes = {
@@ -480,5 +490,8 @@ StepZilla.propTypes = {
   backButtonCls: _propTypes2.default.string,
   backButtonText: _propTypes2.default.string,
   hocValidationAppliedTo: _propTypes2.default.array,
-  onStepChange: _propTypes2.default.func
+  onStepChange: _propTypes2.default.func,
+  nextBtnOnLastStep: _propTypes2.default.bool,
+  nextBtnOnLastStepText: _propTypes2.default.string,
+  nextBtnOnLastStepAction: _propTypes2.default.func
 };

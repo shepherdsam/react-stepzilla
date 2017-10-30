@@ -77,7 +77,8 @@ export default class StepZilla extends Component {
 
     // last step hide next btn, hide previous btn if supplied as props
     if (currentStep >= this.props.steps.length - 1) {
-      showNextBtn = false;
+      nextStepText = this.props.nextBtnOnLastStepText;
+      showNextBtn = this.props.nextBtnOnLastStep === false ? false : true;
       showPreviousBtn = this.props.prevBtnOnLastStep === false ? false : true;
     }
 
@@ -174,8 +175,7 @@ export default class StepZilla extends Component {
             if (evt.target.value === (this.props.steps.length - 1) &&
               this.state.compState === (this.props.steps.length - 1)) {
                 this.setNavState(this.props.steps.length);
-            }
-            else {
+            } else {
               this.setNavState(evt.target.value);
             }
           }
@@ -198,7 +198,11 @@ export default class StepZilla extends Component {
         this.updateStepValidationFlag(proceed);
 
         if (proceed) {
-          this.setNavState(this.state.compState + 1);
+          if ((this.state.compState + 1) === this.props.steps.length) {
+            this.props.nextBtnOnLastStepAction();
+          } else {
+            this.setNavState(this.state.compState + 1);
+          }
         }
       })
       .catch((e) => {
@@ -343,6 +347,8 @@ export default class StepZilla extends Component {
   }
 }
 
+const noop = function() {};
+
 StepZilla.defaultProps = {
   showSteps: true,
   showNavigation: true,
@@ -356,7 +362,10 @@ StepZilla.defaultProps = {
   backButtonText: "Previous",
   backButtonCls: "btn btn-next btn-primary btn-lg pull-left",
   hocValidationAppliedTo: [],
-  onStepChange: function() {}
+  onStepChange: noop,
+  nextBtnOnLastStep: false,
+  nextBtnOnLastStepText: 'Save',
+  nextBtnOnLastStepAction: noop
 };
 
 StepZilla.propTypes = {
@@ -376,5 +385,8 @@ StepZilla.propTypes = {
   backButtonCls: PropTypes.string,
   backButtonText: PropTypes.string,
   hocValidationAppliedTo: PropTypes.array,
-  onStepChange: PropTypes.func
-}
+  onStepChange: PropTypes.func,
+  nextBtnOnLastStep: PropTypes.bool,
+  nextBtnOnLastStepText: PropTypes.string,
+  nextBtnOnLastStepAction: PropTypes.func
+};
