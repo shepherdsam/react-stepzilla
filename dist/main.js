@@ -52,10 +52,25 @@ var StepZilla = function (_Component) {
     return _this;
   }
 
-  // extend the "steps" array with flags to indicate if they have been validated
-
-
   _createClass(StepZilla, [{
+    key: 'componentDidMount',
+    value: function componentDidMount() {
+      this.checkNavState(this.state.compState);
+    }
+  }, {
+    key: 'componentDidUpdate',
+    value: function componentDidUpdate() {
+      // Get changed value
+      var isNextAllowed = this.stepMoveAllowed();
+      // Make sure it is different. (Prevent loop)
+      if (isNextAllowed !== this.state.isNextAllowed) {
+        this.setState({ isNextAllowed: isNextAllowed });
+      }
+    }
+
+    // extend the "steps" array with flags to indicate if they have been validated
+
+  }, {
     key: 'applyValidationFlagsToSteps',
     value: function applyValidationFlagsToSteps() {
       var _this2 = this;
@@ -120,7 +135,8 @@ var StepZilla = function (_Component) {
       return {
         showPreviousBtn: showPreviousBtn,
         showNextBtn: showNextBtn,
-        nextStepText: nextStepText
+        nextStepText: nextStepText,
+        isNextAllowed: this.stepMoveAllowed()
       };
     }
 
@@ -306,16 +322,16 @@ var StepZilla = function (_Component) {
         if (skipValidationExecution) {
           // we are moving backwards in steps, in this case dont validate as it means the user is not commiting to "save"
           proceed = true;
-        } else if (this.isStepAtIndexHOCValidationBased(this.state.compState)) {
+        } else if (this.isStepAtIndexHOCValidationBased(this.state && this.state.compState)) {
           // the user is using a higer order component (HOC) for validation (e.g react-validation-mixin), this wraps the StepZilla steps as a HOC,
           // so use hocValidationAppliedTo to determine if this step needs the aync validation as per react-validation-mixin interface
-          proceed = this.refs.activeComponent.refs.component.isValidated();
-        } else if (Object.keys(this.refs).length == 0 || typeof this.refs.activeComponent.isValidated == 'undefined') {
+          proceed = this.activeComponent.isValidated();
+        } else if (!this.activeComponent || typeof this.activeComponent.isValidated === 'undefined') {
           // if its a form component, it should have implemeted a public isValidated class (also pure componenets wont even have refs - i.e. a empty object). If not then continue
           proceed = true;
         } else {
           // user is moving forward in steps, invoke validation as its available
-          proceed = this.refs.activeComponent.isValidated();
+          proceed = this.activeComponent.isValidated();
         }
       }
 
@@ -393,12 +409,14 @@ var StepZilla = function (_Component) {
         }
       };
 
-      var componentPointer = this.props.steps[this.state.compState].component;
+      var componentPointer = this.props.steps[this.state && this.state.compState].component;
 
       // can only update refs if its a regular React component (not a pure component), so lets check that
       if (componentPointer instanceof _react.Component || // unit test deteceted that instanceof Component can be in either of these locations so test both (not sure why this is the case)
-      componentPointer.type && componentPointer.type.prototype instanceof _react.Component) {
-        cloneExtensions.ref = 'activeComponent';
+      componentPointer.type && componentPointer.type.prototype instanceof _react.Component || componentPointer.type.prototype.isReactComponent) {
+        cloneExtensions.ref = function (el) {
+          _this6.activeComponent = el;
+        };
       }
 
       compToRender = _react2.default.cloneElement(componentPointer, cloneExtensions);
@@ -420,6 +438,7 @@ var StepZilla = function (_Component) {
               onClick: function onClick() {
                 _this6.previous();
               },
+              disabled: this.state.compState <= this.props.startAtStep,
               id: 'prev-button'
             },
             this.props.backButtonText
@@ -432,6 +451,7 @@ var StepZilla = function (_Component) {
               onClick: function onClick() {
                 _this6.next();
               },
+              disabled: !this.state.isNextAllowed,
               id: 'next-button'
             },
             this.state.nextStepText
