@@ -438,7 +438,7 @@ var StepZilla = function (_Component) {
               onClick: function onClick() {
                 _this6.previous();
               },
-              disabled: this.state.compState <= this.props.startAtStep,
+              disabled: this.props.preventPrevBeforeStartAt && this.state.compState <= this.props.startAtStep,
               id: 'prev-button'
             },
             this.props.backButtonText
@@ -482,6 +482,7 @@ StepZilla.defaultProps = {
   dontValidate: false,
   preventEnterSubmission: false,
   startAtStep: 0,
+  preventPrevBeforeStartAt: false,
   nextButtonText: "Next",
   nextButtonCls: "btn btn-prev btn-primary btn-lg pull-right",
   backButtonText: "Previous",
@@ -505,6 +506,7 @@ StepZilla.propTypes = {
   dontValidate: _propTypes2.default.bool,
   preventEnterSubmission: _propTypes2.default.bool,
   startAtStep: _propTypes2.default.number,
+  preventPrevBeforeStartAt: _propTypes2.default.bool,
   nextButtonText: _propTypes2.default.string,
   nextButtonCls: _propTypes2.default.string,
   backButtonCls: _propTypes2.default.string,

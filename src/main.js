@@ -337,7 +337,7 @@ export default class StepZilla extends Component {
             style={this.state.showPreviousBtn ? {} : this.hidden}
             className={props.backButtonCls}
             onClick={() => {this.previous()}}
-            disabled={this.state.compState <= this.props.startAtStep}
+            disabled={this.props.preventPrevBeforeStartAt && this.state.compState <= this.props.startAtStep}
             id="prev-button"
           >
             {this.props.backButtonText}
@@ -374,6 +374,7 @@ StepZilla.defaultProps = {
   dontValidate: false,
   preventEnterSubmission: false,
   startAtStep: 0,
+  preventPrevBeforeStartAt: false,
   nextButtonText: "Next",
   nextButtonCls: "btn btn-prev btn-primary btn-lg pull-right",
   backButtonText: "Previous",
@@ -397,6 +398,7 @@ StepZilla.propTypes = {
   dontValidate: PropTypes.bool,
   preventEnterSubmission: PropTypes.bool,
   startAtStep: PropTypes.number,
+  preventPrevBeforeStartAt: PropTypes.bool,
   nextButtonText: PropTypes.string,
   nextButtonCls: PropTypes.string,
   backButtonCls: PropTypes.string,
