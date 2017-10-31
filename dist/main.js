@@ -56,6 +56,9 @@ var StepZilla = function (_Component) {
     key: 'componentDidMount',
     value: function componentDidMount() {
       this.checkNavState(this.state.compState);
+
+      // Fire off for initial step
+      this.props.onStepChange(this.props.steps[this.state.compState]);
     }
   }, {
     key: 'componentDidUpdate',

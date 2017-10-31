@@ -24,6 +24,9 @@ export default class StepZilla extends Component {
 
   componentDidMount() {
     this.checkNavState(this.state.compState);
+
+    // Fire off for initial step
+    this.props.onStepChange(this.props.steps[this.state.compState]);
   }
 
   componentDidUpdate() {
