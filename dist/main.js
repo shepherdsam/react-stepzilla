@@ -409,6 +409,9 @@ var StepZilla = function (_Component) {
       var cloneExtensions = {
         jumpToStep: function jumpToStep(t) {
           _this6.jumpToStep(t);
+        },
+        forceUpdateParent: function forceUpdateParent() {
+          return _this6.forceUpdate();
         }
       };
 
